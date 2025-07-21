@@ -10,6 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // use EJS as the view engine
+// app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', 'ejs');
 
 // stataic files (styles sheets)
@@ -39,10 +40,7 @@ app.post('/signup', async (req,res)=>{
 
     if (existingUser) {
         return res.status(400).send('User already exists');
-    }else if(!data.username || !data.email || !data.password) {
-        return res.status(400).send('Please fill all the fields');
-    }
-    //check if email already exists 
+    }//check if email already exists 
     // and if the email is valid
     //using regex to check if email is valid    
     else if (!data.email || !data.password) {
@@ -74,6 +72,10 @@ app.post('/login', async (req, res) => {
         const check = await collection.findOne({ username: req.body.username });
         if(!check) {
             res.send("User not found");
+        }
+         const checkemail  = await collection.findOne({ email: req.body.email });
+        if (!checkemail) {
+            return res.send("Email not found");
         }
         //compare the password
         const isPasswordMatch = await bcrypt.compare(req.body.password, check.password);
